@@ -20,8 +20,6 @@ import random
 BOT_TOKEN = os.getenv("BOT_TOKEN")  #  
 CHANNEL_1_USERNAME = "Ur_Rishu_143"  # First channel username
 CHANNEL_2_USERNAME = "Vip_robotz"  # Second channel username
-API_HASH = "42a60d9c657b106370c79bb0a8ac560c"
-API_ID = "14050586"
 
 ADMIN_ID = int(os.getenv("ADMIN_ID", "5738579437"))  # Admin ID for new user notifications
 
