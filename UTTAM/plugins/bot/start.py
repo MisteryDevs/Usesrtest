@@ -39,28 +39,35 @@ async def start_cmd(client, message):
     ]
     await message.reply_text(START_TEXT, reply_markup=InlineKeyboardMarkup(buttons))
 
-# Help callback
-@app.on_callback_query(filters.regex("help_menu"))
-async def help_callback(client, query: CallbackQuery):
-    await query.answer()  # <<< important
-    buttons = [[InlineKeyboardButton("« ʙᴀᴄᴋ", callback_data="back_menu")]]
-    await query.message.edit_text(HELP_TEXT, reply_markup=InlineKeyboardMarkup(buttons))
+# Single callback handler
+@app.on_callback_query()
+async def callbacks(client, query: CallbackQuery):
+    data = query.data
 
-# Back callback
-@app.on_callback_query(filters.regex("back_menu"))
-async def back_callback(client, query: CallbackQuery):
-    await query.answer()  # <<< important
-    buttons = [
-        [
-            InlineKeyboardButton("˹ ᴏᴡɴᴇʀ ˼", url="https://t.me/rishu1286"),
-            InlineKeyboardButton("˹ ᴜᴘᴅᴀᴛᴇ ˼", url="https://t.me/ur_rishu_143"),
-        ],
-        [
-            InlineKeyboardButton("˹ sᴜᴘᴘᴏʀᴛ ˼", url="https://t.me/vip_robotz"),
-            InlineKeyboardButton("˹ ᴍᴜsɪᴄ ˼", url="https://t.me/sanataniiMusicBot"),
-        ],
-        [
-            InlineKeyboardButton("˹ ʜᴇʟᴘ ˼", callback_data="help_menu"),
-        ],
-    ]
-    await query.message.edit_text(START_TEXT, reply_markup=InlineKeyboardMarkup(buttons))
+    if data == "help_menu":
+        buttons = [[InlineKeyboardButton("« ʙᴀᴄᴋ", callback_data="back_menu")]]
+        await query.message.edit_text(
+            HELP_TEXT,
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    elif data == "back_menu":
+        buttons = [
+            [
+                InlineKeyboardButton("˹ ᴏᴡɴᴇʀ ˼", url="https://t.me/rishu1286"),
+                InlineKeyboardButton("˹ ᴜᴘᴅᴀᴛᴇ ˼", url="https://t.me/ur_rishu_143"),
+            ],
+            [
+                InlineKeyboardButton("˹ sᴜᴘᴘᴏʀᴛ ˼", url="https://t.me/vip_robotz"),
+                InlineKeyboardButton("˹ ᴍᴜsɪᴄ ˼", url="https://t.me/sanataniiMusicBot"),
+            ],
+            [
+                InlineKeyboardButton("˹ ʜᴇʟᴘ ˼", callback_data="help_menu"),
+            ],
+        ]
+        await query.message.edit_text(
+            START_TEXT,
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+
+    await query.answer()
