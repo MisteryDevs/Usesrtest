@@ -1,3 +1,4 @@
+from pyrogram import Client
 from UTTAM import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
