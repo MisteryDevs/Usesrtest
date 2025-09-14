@@ -1,8 +1,7 @@
 from UTTAM import app, API_ID, API_HASH
 from config import ALIVE_PIC
 from pyrogram import filters
-import asyncio
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, InputMediaPhoto
 
 PHONE_NUMBER_TEXT = (
     """**╭────── ˹ ɪɴғᴏʀᴍᴀᴛɪᴏɴ ˼ ────•\n┆⚘ ʜᴇʏ, ɪ ᴀᴍ : [˹ 🅤sᴇʀʙᴏᴛ ˼](t.me/ur_rishu_143)\n┆⚘ ᴍᴏʀᴇ ᴀɴɪᴍᴀᴛɪᴏɴ,ғᴜɴ\n┊⚘ ᴘᴏᴡᴇʀғᴜʟ & ᴜsᴇғᴜʟ ᴜsᴇʀʙᴏᴛ\n╰─────────────────────•\n❍ ʜσᴡ ᴛσ υsє ᴛʜɪs ʙσᴛ - [ᴛɪᴘs ʜᴇʀᴇ](https://t.me/ur_rishu_143) \n❍ sᴛꝛɪηɢ sєᴄᴛɪση ʙσᴛ ⁚ [sᴇssɪᴏɴ-ʙᴏᴛ](https://t.me/Rishustringbot) \n•──────────────────────•\n❍ ᴄʟσηє ⁚ /clone [ ʂᴛɾιɳg ʂҽʂʂισɳ ]\n•──────────────────────•\n❍ ᴘσɯҽɾҽᴅ ʙу ⏤‌‌‌‌  [˹ʀɪsʜυ ʙσᴛ](https://t.me/ur_rishu_143) \n•──────────────────────•**"""
@@ -30,25 +29,27 @@ async def hello(client, message):
             InlineKeyboardButton("˹ ʜᴇʟᴘ ˼", callback_data="help_menu"),
         ],
     ]
-    reply_markup = InlineKeyboardMarkup(buttons)
     await client.send_photo(
         message.chat.id,
         ALIVE_PIC,
         caption=PHONE_NUMBER_TEXT,
-        reply_markup=reply_markup,
+        reply_markup=InlineKeyboardMarkup(buttons),
     )
 
-# Callback Handler
+# Help Callback
 @app.on_callback_query(filters.regex("help_menu"))
 async def help_callback(client, query: CallbackQuery):
-    await query.message.edit_caption(
-        caption=HELP_TEXT,
+    await query.message.edit_media(
+        InputMediaPhoto(
+            media=ALIVE_PIC,
+            caption=HELP_TEXT
+        ),
         reply_markup=InlineKeyboardMarkup(
             [[InlineKeyboardButton("« ʙᴀᴄᴋ", callback_data="back_menu")]]
         ),
     )
 
-# Back Button Handler
+# Back Button Callback
 @app.on_callback_query(filters.regex("back_menu"))
 async def back_callback(client, query: CallbackQuery):
     buttons = [
@@ -64,7 +65,10 @@ async def back_callback(client, query: CallbackQuery):
             InlineKeyboardButton("˹ ʜᴇʟᴘ ˼", callback_data="help_menu"),
         ],
     ]
-    await query.message.edit_caption(
-        caption=PHONE_NUMBER_TEXT,
+    await query.message.edit_media(
+        InputMediaPhoto(
+            media=ALIVE_PIC,
+            caption=PHONE_NUMBER_TEXT
+        ),
         reply_markup=InlineKeyboardMarkup(buttons),
     )
