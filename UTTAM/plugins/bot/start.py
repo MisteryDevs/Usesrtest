@@ -134,12 +134,12 @@ async def start_message(client, message):
     # Buttons
     join_button_1 = InlineKeyboardButton("˹sυᴘᴘσꝛᴛ˼", url="https://t.me/Ur_rishu_143")
     join_button_2 = InlineKeyboardButton("˹ᴧʟʟ ʙσᴛ˼", url="https://t.me/vip_robotz/4")
-    music_button = InlineKeyboardButton("˹ϻυsɪᴄ ʙσᴛ˼", url="https://t.me/vip_music_vc_bot")
-    repo_button = InlineKeyboardButton("˹ ʀєᴘσ ˼", url="https://github.com/RishuBot/RishuString")
+    music_button = InlineKeyboardButton("˹ᴄʜᴧᴛ ʙσᴛ˼", url="t.me/DikshaChatBot")
+    repo_button = InlineKeyboardButton("˹ σᴡηєʀ ˼", url="https://t.me/rishu1286")
     help_button = InlineKeyboardButton(" ˹ ɢєηєꝛᴧᴛє sᴛꝛɪηɢ ˼", url="t.me/rishu1286")
 
     mini_web_button_pyrogram = InlineKeyboardButton(
-        "ᴘʏꝛσɢꝛᴧϻ ɢᴇɴᴇʀᴀᴛᴇ sᴇssɪᴏɴ",
+        "⌯ ɢєηєꝛᴧᴛє ᴘʏꝛσɢꝛᴧϻ sᴇssɪᴏɴ ⌯",
         web_app=WebAppInfo(url="https://telegram.tools/session-string-generator#pyrogram,user")
     )
 
