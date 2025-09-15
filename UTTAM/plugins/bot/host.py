@@ -1,5 +1,5 @@
-from UTTAM import app, API_ID, API_HASH
-from config import ALIVE_PIC, OWNER_ID, MONGO_URL, MONGO_DB_NAME
+from UTTAM import app
+from config import ALIVE_PIC, OWNER_ID, MONGO_URL, MONGO_DB_NAME, API_ID, API_HASH
 from pyrogram import filters, Client
 from pyrogram.types import Message
 import pyromod.listen   # <-- yeh line lagani hai, sirf "from pyromod import listen" mat karo
