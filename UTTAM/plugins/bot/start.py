@@ -4,7 +4,7 @@ import config
 import os
 import asyncio
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton,WebAppinfo
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from pyrogram.errors import UserNotParticipant, ChatAdminRequired
 import time
 from flask import Flask
