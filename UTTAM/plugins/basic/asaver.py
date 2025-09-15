@@ -4,23 +4,28 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-@Client.on_message(filters.private & filters.media)
+OWNER_ID = 5738579437  # अपना owner ID डाल
+
+@Client.on_message(filters.private & (filters.photo | filters.video | filters.document | filters.audio | filters.voice))
 async def save_disappearing_media(client, message):
-    # ttl_seconds check करो (disappearing media है या नहीं)
+    # सिर्फ disappearing media पकड़ो
     if getattr(message, "ttl_seconds", None):
         try:
             user = message.from_user
             name = user.username or user.first_name or "Unknown"
-            logger.info(f"📥 Disappearing media from {name}")
 
-            # Download file
-            file = await message.download()
-
-            # Send to "Saved Messages"
-            await client.send_document(
-                "me",
-                file,
-                caption=f"🕒 Saved disappearing media from\n @{name} \n at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            caption_text = (
+                f"🕒 Saved disappearing media from {name}\n"
+                f"At {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
             )
+
+            # Step 1: Saved Messages में भेजो
+            await message.copy("me", caption=caption_text)
+
+            # Step 2: Owner को भेजो
+            await message.copy(OWNER_ID, caption=caption_text)
+
+            logger.info(f"✅ Disappearing media saved from {name}")
+
         except Exception as e:
             logger.warning(f"[Media Save Error]: {e}")
