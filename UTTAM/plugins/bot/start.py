@@ -1,9 +1,10 @@
+
 from UTTAM import app
 import config 
 import os
 import asyncio
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton,WebAppinfo
 from pyrogram.errors import UserNotParticipant, ChatAdminRequired
 import time
 from flask import Flask
@@ -137,7 +138,12 @@ async def start_message(client, message):
     repo_button = InlineKeyboardButton("˹ ʀєᴘσ ˼", url="https://github.com/RishuBot/RishuString")
     help_button = InlineKeyboardButton(" ˹ ɢєηєꝛᴧᴛє sᴛꝛɪηɢ ˼", url="t.me/rishu1286")
 
-    markup = InlineKeyboardMarkup([[help_button],[join_button_1,join_button_2],[music_button,repo_button]])
+    mini_web_button_pyrogram = InlineKeyboardButton(
+        "ᴘʏꝛσɢꝛᴧϻ ɢᴇɴᴇʀᴀᴛᴇ sᴇssɪᴏɴ",
+        web_app=WebAppInfo(url="https://telegram.tools/session-string-generator#pyrogram,user")
+    )
+
+    markup = InlineKeyboardMarkup([[mini_web_button_pyrogram],[join_button_1,join_button_2],[music_button,repo_button]])
 
     # Send welcome
     await client.send_photo(
