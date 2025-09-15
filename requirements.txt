@@ -2,6 +2,7 @@ flask
 flask_restful
 aiohttp
 aiofiles
+pyromod
 bs4
 googlesearch-python==1.0.1
 gitpython
