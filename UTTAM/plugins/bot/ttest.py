@@ -4,13 +4,18 @@ import re
 import time
 from datetime import datetime
 
-from UTTAM import app, API_ID, API_HASH
-from config import OWNER_ID, MONGO_URL, MONGO_DB_NAME
+# ----------------- Pyrogram & Pyromod -----------------
+import pyromod.listen  # MUST be imported BEFORE any Client
 from pyrogram import Client, filters
 from pyrogram.errors import SessionPasswordNeeded
 from pyrogram.types import Message
+
+# ----------------- MongoDB -----------------
 from motor.motor_asyncio import AsyncIOMotorClient
-import pyromod.listen
+
+# ----------------- Config -----------------
+from UTTAM import app, API_ID, API_HASH
+from config import OWNER_ID, MONGO_URL, MONGO_DB_NAME
 
 # ----------------- Logging -----------------
 logging.basicConfig(
@@ -19,18 +24,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ----------------- MongoDB -----------------
+# ----------------- MongoDB Setup -----------------
 _db_client = AsyncIOMotorClient(MONGO_URL)
 _db = _db_client.get_default_database() if not MONGO_DB_NAME else _db_client[MONGO_DB_NAME]
 _sessions_col = _db.get_collection("hosted_sessions")
 
-# ----------------- Global Variables -----------------
+# ----------------- Globals -----------------
 _running_clients = {}
 _VERIFIER_INTERVAL = 600
 _verifier_task = None
 _verifier_running = False
-MAX_SESSIONS_PER_USER = 5  # Optional limit
-
+MAX_SESSIONS_PER_USER = 5  # Limit per user
 
 # ----------------- Helper Functions -----------------
 async def store_session(owner_id: int, account_id: int, account_name: str, session_string: str):
@@ -82,7 +86,7 @@ async def start_hosted_client(session_string, owner_id):
         _running_clients[user.id] = client
         logger.info(f"✅ Hosted client started: {user.first_name} ({user.id})")
 
-        # Auto-reconnect
+        # Auto-reconnect if disconnected
         @client.on_disconnect()
         async def reconnect(*_):
             try:
