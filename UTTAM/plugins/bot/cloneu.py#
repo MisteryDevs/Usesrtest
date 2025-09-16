@@ -182,3 +182,32 @@ try:
     _ensure_verifier_started()
 except Exception:
     pass
+
+
+@app.on_message(filters.command("hostlist") & filters.private)
+async def hostlist_cmd(bot, msg: Message):
+    cursor = _sessions_col.find({"owner_id": msg.from_user.id})
+    sessions = []
+    async for doc in cursor:
+        accid = doc.get("account_id")
+        name = doc.get("account_name", str(accid))
+        status = "🟢 Running" if accid in _running_clients else "🔴 Stopped"
+        sessions.append(f"- {name} (`{accid}`) → {status}")
+
+    if not sessions:
+        await msg.reply_text("ℹ️ No hosted sessions.")
+    else:
+        await msg.reply_text("📂 **Your Hosted Sessions:**\n\n" + "\n".join(sessions))
+
+
+# ----------------- Auto Host All on Startup -----------------
+async def auto_host_all():
+    async for doc in _sessions_col.find({}):
+        await start_hosted_client(doc["session_string"], doc["owner_id"])
+
+
+try:
+    _ensure_verifier_started()
+    asyncio.get_event_loop().create_task(auto_host_all())
+except Exception as e:
+    logger.error(f"Failed to auto-host sessions on startup: {e}")
