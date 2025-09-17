@@ -1,7 +1,10 @@
+from UTTAM import app
+import config 
 import re
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.errors import SessionPasswordNeeded
+
 
 @app.on_message(filters.command("host") & filters.private)
 async def host_command(bot, msg: Message):
