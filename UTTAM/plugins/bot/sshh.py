@@ -3,23 +3,28 @@ import config
 import re
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from pyrogram.errors import SessionPasswordNeeded
+from pyrogram.errors import SessionPasswordNeeded, FloodWait
+import asyncio
 
 API_ID = config.API_ID
 API_HASH = config.API_HASH
 
-async def ask_user(bot: Client, chat_id: int, text: str, timeout: int = 120):
-    """Helper function to ask user for input in Pyrogram"""
-    msg = await bot.send_message(chat_id, text)
+async def ask_user(bot: Client, chat_id: int, text: str, timeout: int = 300):
+    """Ask user for input and wait, retry until timeout"""
+    await bot.send_message(chat_id, text)
 
-    # Wait for next message from same user
+    def check(msg: Message):
+        return msg.chat.id == chat_id
+
     try:
         response = await bot.listen(chat_id, timeout=timeout)
-        return response.text
-    except Exception:
-        await bot.send_message(chat_id, "⏰ Timeout! Please try again.")
+        return response.text.strip()
+    except asyncio.TimeoutError:
+        await bot.send_message(chat_id, "⏰ Timeout! Please try again later.")
         return None
-
+    except FloodWait as e:
+        await asyncio.sleep(e.x)
+        return await ask_user(bot, chat_id, text, timeout)
 
 @app.on_message(filters.command("host") & filters.private)
 async def host_command(bot, msg: Message):
@@ -43,8 +48,7 @@ async def host_command(bot, msg: Message):
         if not code:
             await temp_client.disconnect()
             return
-
-        code = "".join(re.findall(r"\d", code.strip()))
+        code = "".join(re.findall(r"\d", code))
 
         try:
             await temp_client.sign_in(phone, phone_code_hash, code)
@@ -53,7 +57,7 @@ async def host_command(bot, msg: Message):
             if not pwd:
                 await temp_client.disconnect()
                 return
-            await temp_client.check_password(password=pwd.strip())
+            await temp_client.check_password(password=pwd)
 
         # Export session
         session_string = await temp_client.export_session_string()
