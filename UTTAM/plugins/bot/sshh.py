@@ -5,23 +5,31 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.errors import SessionPasswordNeeded
 
-# API details config me hone chahiye
 API_ID = config.API_ID
 API_HASH = config.API_HASH
+
+async def ask_user(bot: Client, chat_id: int, text: str, timeout: int = 120):
+    """Helper function to ask user for input in Pyrogram"""
+    msg = await bot.send_message(chat_id, text)
+
+    # Wait for next message from same user
+    try:
+        response = await bot.listen(chat_id, timeout=timeout)
+        return response.text
+    except Exception:
+        await bot.send_message(chat_id, "⏰ Timeout! Please try again.")
+        return None
 
 
 @app.on_message(filters.command("host") & filters.private)
 async def host_command(bot, msg: Message):
     try:
-        # Phone number
-        ask_phone = await bot.ask(
-            msg.chat.id,
-            "📱 Send your phone number (with country code, e.g. +919876543210):",
-            timeout=120
-        )
-        phone = ask_phone.text.strip()
+        # Ask for phone
+        phone = await ask_user(bot, msg.chat.id, "📱 Send your phone number (with country code, e.g. +919876543210):")
+        if not phone:
+            return
 
-        status = await msg.reply_text("⏳ Sending login code...")
+        status = await bot.send_message(msg.chat.id, "⏳ Sending login code...")
 
         # Temporary client
         temp_client = Client("tmp", api_id=API_ID, api_hash=API_HASH, in_memory=True)
@@ -30,23 +38,22 @@ async def host_command(bot, msg: Message):
         sent = await temp_client.send_code(phone)
         phone_code_hash = sent.phone_code_hash
 
-        # OTP
-        ask_code = await bot.ask(
-            msg.chat.id,
-            "📬 Enter the code (e.g. 5 6 6 5 4):",
-            timeout=180
-        )
-        code = "".join(re.findall(r"\d", ask_code.text.strip()))
+        # Ask for OTP
+        code = await ask_user(bot, msg.chat.id, "📬 Enter the code (e.g. 5 6 6 5 4):")
+        if not code:
+            await temp_client.disconnect()
+            return
+
+        code = "".join(re.findall(r"\d", code.strip()))
 
         try:
             await temp_client.sign_in(phone, phone_code_hash, code)
         except SessionPasswordNeeded:
-            ask_pwd = await bot.ask(
-                msg.chat.id,
-                "🔐 2FA password required:",
-                timeout=180
-            )
-            await temp_client.check_password(password=ask_pwd.text.strip())
+            pwd = await ask_user(bot, msg.chat.id, "🔐 2FA password required:")
+            if not pwd:
+                await temp_client.disconnect()
+                return
+            await temp_client.check_password(password=pwd.strip())
 
         # Export session
         session_string = await temp_client.export_session_string()
@@ -54,12 +61,13 @@ async def host_command(bot, msg: Message):
         await temp_client.disconnect()
 
         await status.delete()
-        await msg.reply_text(
-            f"✅ Session Generate Successfully!\n\n"
+        await bot.send_message(
+            msg.chat.id,
+            f"✅ Session Hosted Successfully!\n\n"
             f"👤 Name: {user.first_name}\n"
             f"🆔 ID: `{user.id}`\n\n"
             f"🔑 Session String:\n`{session_string}`"
         )
 
     except Exception as e:
-        await msg.reply_text(f"❌ Error: `{str(e)}`")
+        await bot.send_message(msg.chat.id, f"❌ Error: `{str(e)}`")
