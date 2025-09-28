@@ -138,12 +138,14 @@ async def start_message(client, message):
     repo_button = InlineKeyboardButton("˹ σᴡηєʀ ˼", url="https://t.me/rishu1286")
     help_button = InlineKeyboardButton(" ˹ ɢєηєꝛᴧᴛє sᴛꝛɪηɢ ˼", url="t.me/rishu1286")
 
+    freebutton = InlineKeyboardButton(" ˹ ʀєᴘσ ˼", url="https://github.com/RishuBot/RishuUserBot")
+
     mini_web_button_pyrogram = InlineKeyboardButton(
         "⌯ ɢєηєꝛᴧᴛє ᴘʏꝛσɢꝛᴧϻ sᴇssɪᴏɴ ⌯",
         web_app=WebAppInfo(url="https://telegram.tools/session-string-generator#pyrogram,user")
     )
 
-    markup = InlineKeyboardMarkup([[mini_web_button_pyrogram],[join_button_1,join_button_2],[music_button,repo_button]])
+    markup = InlineKeyboardMarkup([[mini_web_button_pyrogram],[join_button_1,join_button_2],[music_button,repo_button],[freebutton]])
 
     # Send welcome
     await client.send_photo(
