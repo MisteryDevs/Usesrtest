@@ -45,7 +45,8 @@ async def is_user_in_channel(client, user_id: int, channel_username: str) -> boo
 async def send_join_prompt(client, chat_id):
     join_button_1 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_1_USERNAME}")
     join_button_2 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/{CHANNEL_2_USERNAME}")
-    markup = InlineKeyboardMarkup([[join_button_1], [join_button_2]])
+    join_button_3 = InlineKeyboardButton("♡ Join ♡", url=f"https://t.me/+oZT_8NnIxxk2OGU1")
+    markup = InlineKeyboardMarkup([[join_button_1, join_button_2],[join_button_3]])
     await client.send_message(
         chat_id,
         "♡ You need to join both channels to use this bot.. ♡",
