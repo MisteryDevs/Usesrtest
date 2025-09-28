@@ -2,7 +2,7 @@ import random
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram.errors import ChatAdminRequired, UserNotParticipant, ChatWriteForbidden
-from RISHUSTRINGHACK import app
+from UTTAM import app
 
 # --- Configure required channels ---
 # You can put either the channel username ("MyChannel"), or the numeric chat id (-1001234567890).
