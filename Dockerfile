@@ -1,9 +1,27 @@
 FROM python:3.9-slim-bullseye
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install git curl python3-pip ffmpeg -y
-RUN pip3 install -U pip
-RUN python3 -m pip install --upgrade pip
+
+# Update & install required system dependencies
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y \
+    git \
+    curl \
+    ffmpeg \
+    python3-pip \
+    pkg-config \
+    libcairo2-dev \
+    build-essential \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip
+RUN pip3 install -U pip setuptools wheel
+
+# Copy project files
 COPY . /app/
 WORKDIR /app/
+
+# Install Python dependencies
 RUN pip3 install -U -r requirements.txt
-CMD ["bash","start.sh"]
+
+# Start command
+CMD ["bash", "start.sh"]
