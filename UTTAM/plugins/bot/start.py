@@ -5,6 +5,7 @@ import os
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo, CallbackQuery
+from pyrogram.types import InputMediaPhoto
 from pyrogram.errors import UserNotParticipant, ChatAdminRequired
 import time
 from flask import Flask
@@ -156,6 +157,8 @@ async def start_message(client, message):
 # =========================
 # HELP CALLBACK (Regex)
 # =========================
+
+
 @app.on_callback_query(filters.regex(r"^help"))
 async def help_callback(client, query: CallbackQuery):
     data = query.data.split(":")[-1]
@@ -173,6 +176,7 @@ async def help_callback(client, query: CallbackQuery):
         )
         back_button = InlineKeyboardButton("◀️ Back", callback_data="help:back")
         await query.message.edit_text(text, reply_markup=InlineKeyboardMarkup([[back_button]]))
+        return
 
     elif data == "back":
         user = query.from_user
@@ -204,11 +208,11 @@ async def help_callback(client, query: CallbackQuery):
             [freebutton, help_button]
         ])
 
+        # ✅ Proper way to edit media
         await query.message.edit_media(
-            media={"type": "photo", "media": random_image},
+            media=InputMediaPhoto(media=random_image),
             reply_markup=markup
         )
-
 
 
 @app.on_message(filters.command("broadcast") & filters.user(5738579437))
