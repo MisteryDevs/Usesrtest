@@ -4,7 +4,7 @@ import config
 import os
 import asyncio
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo, CallbackQuery
 from pyrogram.errors import UserNotParticipant, ChatAdminRequired
 import time
 from flask import Flask
@@ -61,12 +61,16 @@ def home():
     return f"Bot uptime: {uptime_minutes:.2f} minutes\nUnique users: {user_count}"
 
 # ---- START COMMAND ----
+
+# =========================
+# START COMMAND
+# =========================
 @app.on_message(filters.command("start"))
 async def start_message(client, message):
     user_id = message.from_user.id
     user = message.from_user
 
-    # Simulate progress
+    # Simulate loading progress
     baby = await message.reply_text("[□□□□□□□□□□] 0%")
     progress = [
         "[■□□□□□□□□□] 10%", "[■■□□□□□□□□] 20%", "[■■■□□□□□□□] 30%", "[■■■■□□□□□□] 40%",
@@ -76,12 +80,11 @@ async def start_message(client, message):
     for step in progress:
         await baby.edit_text(f"**{step}**")
         await asyncio.sleep(0.3)
-
     await baby.edit_text("**❖ Jᴀʏ sʜʀᴇᴇ ʀᴀᴍ 🚩...**")
     await asyncio.sleep(1)
     await baby.delete()
 
-    # Force join check
+    # Force Join Check
     if not (await is_user_in_channel(client, user_id, CHANNEL_1_USERNAME) and
             await is_user_in_channel(client, user_id, CHANNEL_2_USERNAME)):
         await send_join_prompt(client, message.chat.id)
@@ -98,36 +101,13 @@ async def start_message(client, message):
                   f"📊 **Total Users:** {users_collection.count_documents({})}\n\n╚═════ ⋆★⋆ ═════╝")
         )
 
-    # Random image
+    # Random Image
     image_urls = [
-                    "https://graph.org/file/f76fd86d1936d45a63c64.jpg",
+        "https://graph.org/file/f76fd86d1936d45a63c64.jpg",
         "https://graph.org/file/69ba894371860cd22d92e.jpg",
         "https://graph.org/file/67fde88d8c3aa8327d363.jpg",
         "https://graph.org/file/3a400f1f32fc381913061.jpg",
         "https://graph.org/file/a0893f3a1e6777f6de821.jpg",
-        "https://graph.org/file/5a285fc0124657c7b7a0b.jpg",
-        "https://graph.org/file/25e215c4602b241b66829.jpg",
-        "https://graph.org/file/a13e9733afdad69720d67.jpg",
-        "https://graph.org/file/692e89f8fe20554e7a139.jpg",
-        "https://graph.org/file/db277a7810a3f65d92f22.jpg",
-        "https://graph.org/file/a00f89c5aa75735896e0f.jpg",
-        "https://graph.org/file/f86b71018196c5cfe7344.jpg",
-        "https://graph.org/file/a3db9af88f25bb1b99325.jpg",
-        "https://graph.org/file/5b344a55f3d5199b63fa5.jpg",
-        "https://graph.org/file/84de4b440300297a8ecb3.jpg",
-        "https://graph.org/file/84e84ff778b045879d24f.jpg",
-        "https://graph.org/file/a4a8f0e5c0e6b18249ffc.jpg",
-        "https://graph.org/file/ed92cada78099c9c3a4f7.jpg",
-        "https://graph.org/file/d6360613d0fa7a9d2f90b.jpg",
-        "https://graph.org/file/37248e7bdff70c662a702.jpg",
-        "https://graph.org/file/0bfe29d15e918917d1305.jpg",
-        "https://graph.org/file/16b1a2828cc507f8048bd.jpg",
-        "https://graph.org/file/e6b01f23f2871e128dad8.jpg",
-        "https://graph.org/file/cacbdddee77784d9ed2b7.jpg",
-        "https://graph.org/file/ddc5d6ec1c33276507b19.jpg",
-        "https://graph.org/file/39d7277189360d2c85b62.jpg",
-        "https://graph.org/file/5846b9214eaf12c3ed100.jpg",
-        "https://graph.org/file/ad4f9beb4d526e6615e18.jpg",
         "https://graph.org/file/3514efaabe774e4f181f2.jpg",
     ]
     random_image = random.choice(image_urls)
@@ -137,18 +117,21 @@ async def start_message(client, message):
     join_button_2 = InlineKeyboardButton("˹ᴧʟʟ ʙσᴛ˼", url="https://t.me/vip_robotz/4")
     music_button = InlineKeyboardButton("˹ᴄʜᴧᴛ ʙσᴛ˼", url="t.me/DikshaChatBot")
     repo_button = InlineKeyboardButton("˹ σᴡηєʀ ˼", url="https://t.me/rishu1286")
-    help_button = InlineKeyboardButton(" ˹ ɢєηєꝛᴧᴛє sᴛꝛɪηɢ ˼", url="t.me/rishu1286")
-
-    freebutton = InlineKeyboardButton(" ˹ ʀєᴘσ ˼", url="https://github.com/RishuBot/RishuUserBot")
+    help_button = InlineKeyboardButton("💡 ˹ʜᴇʟᴘ˼", callback_data="help:menu")
+    freebutton = InlineKeyboardButton(" ˹ʀєᴘσ˼", url="https://github.com/RishuBot/RishuUserBot")
 
     mini_web_button_pyrogram = InlineKeyboardButton(
         "⌯ ɢєηєꝛᴧᴛє ᴘʏꝛσɢꝛᴧϻ sᴇssɪᴏɴ ⌯",
         web_app=WebAppInfo(url="https://telegram.tools/session-string-generator#pyrogram,user")
     )
 
-    markup = InlineKeyboardMarkup([[mini_web_button_pyrogram],[join_button_1,join_button_2],[music_button,repo_button],[freebutton]])
+    markup = InlineKeyboardMarkup([
+        [mini_web_button_pyrogram],
+        [join_button_1, join_button_2],
+        [music_button, repo_button],
+        [freebutton, help_button]
+    ])
 
-    # Send welcome
     await client.send_photo(
         chat_id=message.chat.id,
         photo=random_image,
@@ -168,6 +151,63 @@ async def start_message(client, message):
         reply_markup=markup,
         has_spoiler=True
     )
+
+
+# =========================
+# HELP CALLBACK (Regex)
+# =========================
+@app.on_callback_query(filters.regex(r"^help"))
+async def help_callback(client, query: CallbackQuery):
+    data = query.data.split(":")[-1]
+
+    if data == "menu":
+        text = (
+            "**╭─❍ ʜᴇʟᴘ ᴍᴇɴᴜ ❍─╮**\n\n"
+            "✨ **Available Commands:**\n\n"
+            "• `/start` – Start the bot\n"
+            "• `/clone` – Clone your userbot session\n"
+            "• `/stats` – Show bot statistics\n"
+            "• `/broadcast` – Broadcast messages (admin only)\n\n"
+            "🧩 **Support:** @Ur_rishu_143\n"
+            "💻 **Owner:** @Rishu1286"
+        )
+        back_button = InlineKeyboardButton("◀️ Back", callback_data="help:back")
+        await query.message.edit_text(text, reply_markup=InlineKeyboardMarkup([[back_button]]))
+
+    elif data == "back":
+        user = query.from_user
+        image_urls = [
+            "https://graph.org/file/f76fd86d1936d45a63c64.jpg",
+            "https://graph.org/file/69ba894371860cd22d92e.jpg",
+            "https://graph.org/file/67fde88d8c3aa8327d363.jpg",
+            "https://graph.org/file/3a400f1f32fc381913061.jpg",
+            "https://graph.org/file/a0893f3a1e6777f6de821.jpg",
+        ]
+        random_image = random.choice(image_urls)
+
+        join_button_1 = InlineKeyboardButton("˹sυᴘᴘσꝛᴛ˼", url="https://t.me/Ur_rishu_143")
+        join_button_2 = InlineKeyboardButton("˹ᴧʟʟ ʙσᴛ˼", url="https://t.me/vip_robotz/4")
+        music_button = InlineKeyboardButton("˹ᴄʜᴧᴛ ʙσᴛ˼", url="t.me/DikshaChatBot")
+        repo_button = InlineKeyboardButton("˹ σᴡηєʀ ˼", url="https://t.me/rishu1286")
+        freebutton = InlineKeyboardButton(" ˹ʀєᴘσ˼", url="https://github.com/RishuBot/RishuUserBot")
+        help_button = InlineKeyboardButton("💡 ˹ʜᴇʟᴘ˼", callback_data="help:menu")
+
+        mini_web_button_pyrogram = InlineKeyboardButton(
+            "⌯ ɢєηєꝛᴧᴛє ᴘʏꝛσɢꝛᴧϻ sᴇssɪᴏɴ ⌯",
+            web_app=WebAppInfo(url="https://telegram.tools/session-string-generator#pyrogram,user")
+        )
+
+        markup = InlineKeyboardMarkup([
+            [mini_web_button_pyrogram],
+            [join_button_1, join_button_2],
+            [music_button, repo_button],
+            [freebutton, help_button]
+        ])
+
+        await query.message.edit_media(
+            media={"type": "photo", "media": random_image},
+            reply_markup=markup
+        )
 
 
 
